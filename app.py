@@ -21,7 +21,7 @@ st.markdown(
 st.title("Datasweeper Stearling Integratot By Zaryab Irfan")
 st.write("Transform your files between CSV and Excel formats with built-in data cleaning abd visualization. Creating the project of quarter 3!")
 
-uploading_files = st.file_uploader("Upload your files (accepts CSV or Excel):", type=["cvs", "xlsx"], accept_multiple_files=(True))
+uploading_files = st.file_uploader("Upload your files (accepts CSV or Excel):", type=["csv", "xlsx"], accept_multiple_files=True)
 
 if uploading_files:
     for file in uploading_files:
@@ -30,7 +30,7 @@ if uploading_files:
         if file_ext == ".csv":
             df = pd.read_csv(file)
 
-        elif file_ext == "xlsx":
+        elif file_ext == ".xlsx":
             df = pd.read_excel(file)
 
         else:
@@ -45,14 +45,14 @@ if uploading_files:
             col1, col2 = st.columns(2)
 
             with col1:
-                if st.button(f"Remove duplicates freom the file : {file.name}"):
+                if st.button(f"Remove duplicates from the file : {file.name}"):
                     df.drop_duplicates(inplace=True)
-                    st.write("Duplicates removed!")
+                    st.write("Missing values have been filled!")
 
             with col2:
-                if st.button(f"Fill missing values  for : {file.name}"):
+                if st.button(f"Fill missing values for : {file.name}"):
                     numeric_cols = df.select_dtypes(include=['number']).columns
-                    st.write("Duplicates removed!")  
+                    st.write("Missing values have been filled!")  
                     df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
                     st.write("Missing values has been filled")
         
@@ -66,22 +66,22 @@ if uploading_files:
             st.bar_chart(df.select_dtypes(include='number').iloc[:, :2])
 
         st.subheader("Conversion Options")
-        conversion_type = st.radio(f"Convert {file.name} to:", ["CVS" , "Excel"], key=file.name) 
-        if st.button(f"Convert{file.name}"):
+        conversion_type = st.radio(f"Convert {file.name} to:", ["CSV" , "Excel"], key=file.name) 
+        if st.button(f"Convert {file.name}"):
             buffer = BytesIO()
-            if conversion_type == "CVS":
-                df.to.csv(buffer, index=False)
+            if conversion_type == "CSV":
+                df.to_csv(buffer, index=False)
                 file_name = file.name.replace(file_ext, ".csv")
                 mime_type = "text/csv"
 
-            elif conversion_type == "Excal":
-                df.to.to_excel(buffer, index=False)
+            elif conversion_type == "Excel":
+                df.to_excel(buffer, index=False)
                 file_name = file.name.replace(file_ext, ".xlsx")
                 mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            buffer.seel(0)
+            buffer.seek(0)
 
             st.download_button(
-                label=f"Downloadm {file.name} as {conversion_type}",
+                label=f"Download {file.name} as {conversion_type}",
                 data=buffer,
                 file_name=file_name,
                 mime=mime_type
